@@ -6,15 +6,26 @@
     <title>To Do List</title>
 
     <link rel="stylesheet" href=".\css\styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="todo">
         <div class="header">
-            <h1>TO DO LIST</h1>
+            <h1>GET THINGS DONE</h1>
         </div>
         <div class="addbox">
-            <input type="text" id="myInput" placeholder="Content...">
-            <button class="btn" id="add">Add</button>
+            <!-- <input type="text" id="myInput" placeholder="Content..."> -->
+            <button class="btn" id="add">Add Task</button>
+            <button class="btn btn-filter" id="filter">Filter Tasks</button>
+            <button class="btn btn-filter hide" id="unfilter">View All</button>
+            <button class="btn btn-bcklg" id="bcklog">View Backlogs</button>
+            <button class="btn btn-bcklg hide" id="unbcklog">View All</button>
+            <button class="btn btn-sort" id="sort">Sort</button>
+            <button class="btn btn-search" id="search">Search</button>
+            <button class="btn btn-search hide" id="unsearch">View All</button>
         </div>
         <hr>
         <div class="listholder">
@@ -34,7 +45,207 @@
             </ul>
         </div>
     </div>
+    <div class="popup-container add-pop hide">
+        <div class="popup popup-add">
+            <div class="ip-div">
+                <div class="label">Task</div>
+                <input type="text" class="form-ip" id="myInput" placeholder="Content...">
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Category</div>
+                <input type="text" class="form-ip" id="myCategory" placeholder="Category...">
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Select Priority</div>
+                <select class="form-ip" id="myPriority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
 
+            <div class="ip-div">
+                <div class="label">Select Tags</div>
+                <button class="btn btn-tags-select" id="tagsSelect">Choose Tags</button>
+            </div>
+
+            
+
+            <div class="ip-div">
+                <div class="label">Add New Tags</div>
+                <div class="sub-ip">
+                    <input type="text" class="form-ip ntip" id="myTagsAdd">
+                    <button class="btn btn-tags" id="tagsAdd">Add Tag</button>
+                </div>
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Select Due Date</div>
+                <input class="form-ip" type="date" id="myDate" name="date">
+            </div>
+
+            <button class="btn" id="sbmt">Submit</button>
+            
+        </div>
+    </div>
+
+    <div class="popup-container edit-pop hide">
+        <div class="popup">
+            <div class="ip-div">
+                <div class="label">Task</div>
+                <input type="text" class="form-ip" id="eInput" placeholder="Content...">
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Category</div>
+                <input type="text" class="form-ip" id="eCategory" placeholder="Category...">
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Select Priority</div>
+                <select class="form-ip" id="ePriority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Select Due Date</div>
+                <input class="form-ip" type="date" id="eDate" name="date">
+            </div>
+
+            <div class="ip-div">
+                <div class="label">Select Tags</div>
+                <button class="btn btn-tags-select" id="tagsSelectEdt">Choose Tags</button>
+            </div>
+
+            <button class="btn" id="e-sbmt">Submit</button>
+            
+        </div>
+    </div>
+
+    <div class="popup-container filter-pop hide">
+        <div class="popup">
+            
+            <div class="ip-div">
+                <div class="label">Filter By Category</div>
+                <input type="text" class="form-ip" id="fCategory" placeholder="Search Category...">
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Filter By Priority</div>
+                <select class="form-ip" id="fPriority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="all">All</option>
+                </select>
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Select Start Due Date</div>
+                <input class="form-ip" type="date" id="s-fDate" name="date">
+
+                <div class="label">Select Start Due Date</div>
+                <input class="form-ip" type="date" id="e-fDate" name="date">
+            </div>
+
+            <div class="ip-div">
+                <div class="label">Filter By Tags</div>
+                <button class="btn btn-tags-select" id="tagsSelectfltr">Choose Tags</button>
+            </div>
+
+            <button class="btn" id="f-sbmt">Filter</button>
+            
+        </div>
+    </div>
+
+    <div class="popup-container tags-select hide">
+        <div class="popup">
+            <h1 class="taskname">Available Tags</h1>
+            <ul id="tagsUL">
+
+            </ul>
+            <button class="btn" id="tagsselect-sbmt">Add</button>
+            <button class="btn hide" id="tagsselectEdt-sbmt">Add</button>
+            <button class="btn hide" id="tagsselectfltr-sbmt">Add</button>
+        </div>
+    </div>
+
+    <div class="popup-container stv-pop hide">
+        <div class="popup stv-pi">
+            <h1 class="taskname"></h1>
+            <ul id="stul">
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="popup-container st-pop hide">
+        <div class="popup">
+            <div class="ip-div">
+                <div class="label">Subtask</div>
+                <input type="text" class="form-ip" id="stInput" placeholder="Content...">
+            </div>
+
+            <button class="btn" id="st-sbmt">Add</button>
+            <button class="btn" id="st-sbmt-edit">Save</button>
+        </div>
+    </div>
+
+    <div class="popup-container sort-pop hide">
+        <div class="popup">
+            
+            <div class="ip-div">
+                <div class="label">Select parameter to sort by</div>
+                <select class="form-ip" id="parameter">
+                    <option value="Key">Key</option>
+                    <option value="priority">Priority</option>
+                    <option value="Date">Date</option>
+                </select>
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Select Ascending or Descending</div>
+                <select class="form-ip" id="order">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+
+            <button class="btn" id="sort-sbmt">Sort</button>
+            
+        </div>
+    </div>
+
+    <div class="popup-container search-pop hide">
+        <div class="popup">
+            
+            <div class="ip-div">
+                <div class="label">Select parameter to search by</div>
+                <select class="form-ip" id="search-parameter">
+                    <option value="task">Task</option>
+                    <option value="subtask">Subtask</option>
+                    <option value="contains">Contains Term</option>
+                </select>
+            </div>
+            
+            <div class="ip-div">
+                <div class="label">Search Term</div>
+                <input type="text" class="form-ip" id="term" placeholder="Content...">
+            </div>
+
+            <button class="btn" id="search-sbmt">Search</button>
+            
+        </div>
+    </div>
+
+    
+
+    <script src=".\js\getdata.js"></script>
     <script src=".\js\index.js"></script>
 </body>
 </html>
