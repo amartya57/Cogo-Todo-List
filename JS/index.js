@@ -51,6 +51,8 @@ class SubObj{
     }
 }
 
+// Functions
+
 function addToLog(activity){
     let k1=new Date().getTime();
     activity_log[k1]=activity;
@@ -683,7 +685,6 @@ tagsSelectbtnEdt.addEventListener('click', function(e){
 })
 
 edtsbmtbtn.addEventListener('click', function(){
-    // addEle();
     let task = document.getElementById("eInput").value;
     let category = document.getElementById("eCategory").value;
     let priority = document.getElementById("ePriority").value;
