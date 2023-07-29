@@ -259,6 +259,14 @@ function render(obj1){
 
     li.appendChild(div_outer);
     li.draggable=true;
+    li.classList.add("drag-li");
+
+    li.addEventListener("dragstart", ()=>{
+        li.classList.add('dragging');
+    })
+    li.addEventListener("dragend", ()=>{
+        li.classList.remove('dragging');
+    })
 
     ul.appendChild(li);
 }
@@ -1088,6 +1096,25 @@ ul.addEventListener('click', function(e){
         changeState(e);
     }
 })
+
+
+// Enabling drag and drop
+
+const initSortableList = (e)=>{
+    const draggingItem = ul.querySelector(".dragging");
+
+    const siblings = [...ul.querySelectorAll(".drag-li:not(.dragging)")];
+
+    let nextSibling=siblings.find(sibling =>{
+        return e.clientY <= sibling.offsetTop + sibling.offsetHeight / 2;
+    })
+
+    //console.log(nextSibling);
+
+    ul.insertBefore(draggingItem, nextSibling);
+}
+
+ul.addEventListener('dragover', initSortableList);
 
 
 let stul=document.querySelector("#stul");
