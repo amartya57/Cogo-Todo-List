@@ -22,7 +22,7 @@ let rev_priority_chart={
 };
 
 class Obj{
-    constructor(key, value, category, priority, dueDate){
+    constructor(key, value, category="None", priority, dueDate){
         this.key=key;
         this.value=value;
         this.completed=false;
@@ -91,7 +91,7 @@ function onlyUnique(value, index, array) {
 }
 
 function filter(category, priority, sdueDate, edueDate, tagsarr){
-    
+    //console.log(tagsarr);
     let newArray = arr.filter(function (el) {
         let cond=true;
         if(category!=""){
@@ -229,7 +229,16 @@ function render(obj1){
     checkbox.classList.add(ctr.toString());
 
     div_inner.appendChild(checkbox);
-    let textNode = document.createTextNode(obj1.value);
+    let time_text="( Upcoming )";
+    if(new Date().getTime() > new Date(obj1.dueDate).getTime()){
+        time_text="( Expired )";
+    }
+    let inner_txt=`${obj1.value} || Priority - ${rev_priority_chart[obj1.priority.toString()]} || Category - ${obj1.category} || ${time_text} || `;
+    obj1.tags.forEach((tag)=>{
+        inner_txt+=`${tag.value} ,`
+    })
+    inner_txt=inner_txt.substring(0, inner_txt.length-1);
+    let textNode = document.createTextNode(inner_txt);
     div_inner.appendChild(textNode);
     div_inner.classList.add('litem');
     
@@ -249,6 +258,7 @@ function render(obj1){
     div_outer.classList.add('list-item-div');
 
     li.appendChild(div_outer);
+    li.draggable=true;
 
     ul.appendChild(li);
 }
@@ -368,7 +378,13 @@ function addEle(){
     //     add(ctr, task, category, priority, dueDate);
     //     renderAll();
     // }
-    if(task!=""){
+    if(task==""){
+        alert("Can not add task without any content");
+    }
+    else if(dueDate==""){
+        alert("Have to add due date to add a task");
+    }
+    else{
         let objtemp=add(ctr, task, category, priority, dueDate);
         let taglen=currTags.length;
         for(let i=0; i<taglen; i++){
