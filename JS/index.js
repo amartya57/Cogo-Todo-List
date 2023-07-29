@@ -40,7 +40,7 @@ let rev_priority_chart={
 };
 
 class Obj{
-    constructor(key, value, category="None", priority, dueDate){
+    constructor(key, value, category="None", priority, dueDate, alertDate){
         this.key=key;
         this.value=value;
         this.completed=false;
@@ -49,6 +49,7 @@ class Obj{
         this.category=category;
         this.priority=priority_chart[priority];
         this.dueDate=dueDate;
+        this.alertDate=alertDate;
         this.tags=[];
     }
 }
@@ -218,6 +219,7 @@ function render(obj1){
     let div_btn=document.createElement('div');
     let div_st=document.createElement('div');
     let div_stv=document.createElement('div');
+    let div_alrt=document.createElement('div');
     let div_btns=document.createElement('div');
 
     div_btn.innerText='Delete';
@@ -233,11 +235,16 @@ function render(obj1){
     div_stv.classList.add('stvbtn');
     div_stv.classList.add(ctr.toString());
 
+    div_alrt.innerText="Set Alert";
+    div_alrt.classList.add('alrtbtn');
+    div_alrt.classList.add(ctr.toString());
+
     
     div_btns.classList.add('btns-div');
     div_btns.appendChild(div_stv);
     div_btns.appendChild(div_st);
     div_btns.appendChild(div_btn);
+    div_btns.appendChild(div_alrt);
 
     let checkbox = document.createElement('input');
     checkbox.type = "checkbox";
@@ -265,9 +272,18 @@ function render(obj1){
         checkbox.checked=true;
     }
     else{
-        div_inner.classList.add('bg-blue');
+        if(obj1.alertDate!=""){
+            if(new Date().getTime() >= new Date(obj1.alertDate).getTime()){
+                div_inner.classList.add('bg-yellow');
+            }
+        }
+        else{
+            div_inner.classList.add('bg-blue');
+        }
         checkbox.checked=false;
     }
+
+    
     div_inner.classList.add(ctr.toString());
 
 
@@ -544,6 +560,47 @@ outer.addEventListener('click', function(e){
         }
     }
 }, true)
+
+//Setting alert for a task
+
+let popupalrt=document.querySelector(".alert-pop");
+let outeralrt=document.querySelector(".alert-pop");
+
+function setAlert(e){
+    let eId=e.target.classList[1];
+
+    if(popupalrt.classList.contains('hide')){
+        popupalrt.classList.remove('hide');
+        document.getElementById("alrt-sbmt").classList.add(eId.toString());
+    }
+
+    outeralrt.addEventListener('click', function(e){
+        if(e.target==outeralrt){
+            let popupalrt=document.querySelector('.alert-pop');
+            if(popupalrt.classList.contains('hide')==false){
+                popupalrt.classList.add("hide");
+            }
+            document.getElementById("alrt-sbmt").classList.remove(eId.toString());
+        }
+    }, true)
+}
+
+let alrtSetBtn=document.getElementById("alrt-sbmt");
+alrtSetBtn.addEventListener("click", (e)=>{
+    let alrtdate = document.getElementById("alrt-Date").value;
+    document.getElementById("alrt-Date").value="";
+    let objID=alrtSetBtn.classList[1];
+    document.getElementById("alrt-sbmt").classList.remove(objID.toString());
+    let idxalrt=arr.findIndex((obj) => obj.key==objID);
+    if(alrtdate!=""){
+        arr[idxalrt].alertDate=alrtdate;
+        addToLog("Alert added for Task with Id " + objID.toString());
+    }
+    if(popupalrt.classList.contains('hide')==false){
+        popupalrt.classList.add("hide");
+    }
+    renderAll();
+})
 
 //Showing subtasks of a task
 
@@ -1116,6 +1173,9 @@ ul.addEventListener('click', function(e){
     }
     else if(e.target.classList.contains('stvbtn')){
         showSubtasks(e);
+    }
+    else if(e.target.classList.contains('alrtbtn')){
+        setAlert(e);
     }
     else if(e.target.classList.contains("check")){
         changeState(e);
