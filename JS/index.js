@@ -260,6 +260,7 @@ function render(obj1){
     li.appendChild(div_outer);
     li.draggable=true;
     li.classList.add("drag-li");
+    li.classList.add(ctr.toString());
 
     li.addEventListener("dragstart", ()=>{
         li.classList.add('dragging');
@@ -371,6 +372,9 @@ let currTags=[];
 function addEle(){
     let task = document.getElementById("myInput").value;
     let category = document.getElementById("myCategory").value;
+    if(category==""){
+        category="None";
+    }
     let priority = document.getElementById("myPriority").value;
     let dueDate = document.getElementById("myDate").value;
     
@@ -1100,6 +1104,17 @@ ul.addEventListener('click', function(e){
 
 // Enabling drag and drop
 
+function array_move(arr, old_index, new_index) {
+    if (new_index >= arr.length) {
+        var k = new_index - arr.length + 1;
+        while (k--) {
+            arr.push(undefined);
+        }
+    }
+    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    return arr;
+};
+
 const initSortableList = (e)=>{
     const draggingItem = ul.querySelector(".dragging");
 
@@ -1110,8 +1125,15 @@ const initSortableList = (e)=>{
     })
 
     //console.log(nextSibling);
+    // console.log(draggingItem.classList[1]);
+    // console.log(nextSibling.classList[1]);
 
     ul.insertBefore(draggingItem, nextSibling);
+
+    let index1 = arr.findIndex((obj) => obj.key==Number(draggingItem.classList[1]));
+    let index2 = arr.findIndex((obj) => obj.key==Number(nextSibling.classList[1]));
+
+    arr=array_move(arr, index1, index2);
 }
 
 ul.addEventListener('dragover', initSortableList);
@@ -1127,3 +1149,33 @@ stul.addEventListener('click', function(e){
         stchangeState(e);
     }
 })
+
+
+// Activity Log
+
+let albtn=document.getElementById("a-log");
+albtn.addEventListener('click', function(e){
+    let popupalog=document.querySelector('.alog-pop');
+    if(popupalog.classList.contains('hide')){
+        popupalog.classList.remove('hide');
+    }
+
+    let logs=Object.values(activity_log);
+    let alUL=document.getElementById('alul');
+    alUL.innerHTML="";
+    logs.forEach((e)=>{
+        let li=document.createElement('li');
+        li.innerText=e;
+        alUL.appendChild(li);
+    })
+
+    let outer=document.querySelector(".alog-pop")
+    outer.addEventListener('click', function(e){
+        if(e.target==outer){
+            let popupalog=document.querySelector('.alog-pop');
+            if(popupalog.classList.contains('hide')==false){
+                popupalog.classList.add("hide");
+            }
+        }
+    }, true)
+});
