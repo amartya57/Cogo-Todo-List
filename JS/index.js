@@ -9,6 +9,24 @@ let activity_log={
 
 };
 
+
+if(!localStorage.getItem("arr")){
+    localStorage.setItem("arr", JSON.stringify(arr));
+    localStorage.setItem("tags", JSON.stringify(tags));
+    localStorage.setItem("tagObjs", JSON.stringify(tagObjs));
+    localStorage.setItem("ctr", JSON.stringify(ctr));
+    localStorage.setItem("tagctr", JSON.stringify(tagctr));
+    localStorage.setItem("activity_log", JSON.stringify(activity_log));
+}
+else{
+    arr=JSON.parse(localStorage.getItem("arr"));
+    tags=JSON.parse(localStorage.getItem("tags"));
+    tagObjs=JSON.parse(localStorage.getItem("tagObjs"));
+    ctr=JSON.parse(localStorage.getItem("ctr"));
+    tagctr=JSON.parse(localStorage.getItem("tagctr"));
+    activity_log=JSON.parse(localStorage.getItem("activity_log"));
+}
+
 let priority_chart={
     "low" : 1,
     "medium" : 2,
@@ -71,7 +89,7 @@ function addSub(id, subtask){
     let subObj=new SubObj(arr[index1].ctr, subtask);
     arr[index1].subtasks.push(subObj);
 
-    addToLog("Subtask with id "+arr[index1].ctr.toString()+" of task " +id.toString() + " added");
+    addToLog("Subtask with Id "+arr[index1].ctr.toString()+" of task " +id.toString() + " added");
 }
 
 function del(id){
@@ -272,6 +290,7 @@ function render(obj1){
     ul.appendChild(li);
 }
 
+
 function renderAll(myArr=arr){
     let ul=document.querySelector('#listUL');
     ul.innerHTML=""
@@ -280,6 +299,8 @@ function renderAll(myArr=arr){
         render(myArr[i]);
     }
 }
+
+renderAll();
 
 //rendering Subtasks
 
@@ -384,7 +405,7 @@ function addEle(){
     document.getElementById("myDate").value = "yyyy-MM-dd";
 
     ctr+=1;
-    addToLog("Task with key " + ctr.toString() + " added");
+    addToLog("Task with Id " + ctr.toString() + " added");
 
     // if(task!="" && dueDate!=""){
     //     add(ctr, task, category, priority, dueDate);
@@ -1179,3 +1200,13 @@ albtn.addEventListener('click', function(e){
         }
     }, true)
 });
+
+setInterval(() => {
+    //console.log("Hello");
+    localStorage.setItem("arr", JSON.stringify(arr));
+    localStorage.setItem("tags", JSON.stringify(tags));
+    localStorage.setItem("tagObjs", JSON.stringify(tagObjs));
+    localStorage.setItem("ctr", JSON.stringify(ctr));
+    localStorage.setItem("tagctr", JSON.stringify(tagctr));
+    localStorage.setItem("activity_log", JSON.stringify(activity_log));
+}, 2000);
