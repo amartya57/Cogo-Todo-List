@@ -109,6 +109,26 @@ function onlyUnique(value, index, array) {
     return array.indexOf(value) === index;
 }
 
+function operation(list1, list2, isUnion) {
+    var result = [];
+    
+    for (var i = 0; i < list1.length; i++) {
+        var item1 = list1[i],
+            found = false;
+        for (var j = 0; j < list2.length && !found; j++) {
+            found = item1.userId === list2[j].userId;
+        }
+        if (found === !!isUnion) { // isUnion is coerced to boolean
+            result.push(item1);
+        }
+    }
+    return result;
+}
+
+function inBoth(list1, list2) {
+    return operation(list1, list2, true);
+}
+
 function filter(category, priority, sdueDate, edueDate, tagsarr){
     //console.log(tagsarr);
     let newArray = arr.filter(function (el) {
@@ -134,7 +154,6 @@ function filter(category, priority, sdueDate, edueDate, tagsarr){
         return cond;
     }
     );
-    
     if(tagsarr.length){
         let tagfltrArr=[];
         let l=tagsarr.length;
@@ -142,7 +161,8 @@ function filter(category, priority, sdueDate, edueDate, tagsarr){
             let tagidx=tagObjs.findIndex((obj) => obj.value==tagsarr[i]);
             tagfltrArr=tagfltrArr.concat(tagObjs[tagidx].tasks);
         }
-        newArray=newArray.filter(obj => tagfltrArr.includes(obj));
+        // newArray=newArray.filter(obj => tagfltrArr.includes(obj));
+        newArray=inBoth(newArray, tagfltrArr);
     }
     renderAll(newArray);
 }
@@ -260,7 +280,8 @@ function render(obj1){
     }
     let inner_txt=`${obj1.value} || Priority - ${rev_priority_chart[obj1.priority.toString()]} || Category - ${obj1.category} || ${time_text} || ${obj1.dueDate} || `;
     obj1.tags.forEach((tag)=>{
-        inner_txt+=`${tag.value} ,`
+        let tagrndrindex = tagObjs.findIndex((obj) => obj.key==tag);
+        inner_txt+=`${tagObjs[tagrndrindex].value} ,`
     })
     inner_txt=inner_txt.substring(0, inner_txt.length-1);
     let textNode = document.createTextNode(inner_txt);
@@ -532,7 +553,7 @@ function addEle(){
         for(let i=0; i<taglen; i++){
             if(objtemp.tags.includes(currTags[i])==false){
                 let tagidx=tagObjs.findIndex((obj) => obj.value==currTags[i]);
-                objtemp.tags.push(tagObjs[tagidx]);
+                objtemp.tags.push(tagObjs[tagidx].key);
                 tagObjs[tagidx].tasks.push(objtemp);
             }
         }
@@ -897,10 +918,20 @@ edtsbmtbtn.addEventListener('click', function(){
 
         let taglen=currTags.length;
         let objtemp=arr[edtindex];
+        let tOlen=objtemp.tags.length;
+        for(let i=0; i<tOlen; i++){
+            let tempIdx=tagObjs.findIndex((obj) => obj.key==objtemp.tags[i]);
+            // console.log(tagObjs[tempIdx]);
+            let toIdx=tagObjs[tempIdx].tasks.findIndex((obj) => obj.key==objtemp.key);
+            // console.log(tagObjs[tempIdx].tasks[toIdx]);
+            tagObjs[tempIdx].tasks.splice(toIdx,1);
+            tagObjs[tempIdx].tasks=tagObjs[tempIdx].tasks.splice(toIdx,1);
+        }
+        objtemp.tags=[];
         for(let i=0; i<taglen; i++){
             if(objtemp.tags.includes(currTags[i])==false){
                 let tagidx=tagObjs.findIndex((obj) => obj.value==currTags[i]);
-                objtemp.tags.push(tagObjs[tagidx]);
+                objtemp.tags.push(tagObjs[tagidx].key);
                 tagObjs[tagidx].tasks.push(objtemp);
             }
         }
@@ -1360,3 +1391,7 @@ setInterval(() => {
     localStorage.setItem("tagctr", JSON.stringify(tagctr));
     localStorage.setItem("activity_log", JSON.stringify(activity_log));
 }, 2000);
+
+setInterval(()=>{
+    console.log(tagObjs);
+}, 5000)
