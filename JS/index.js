@@ -1237,7 +1237,7 @@ function stchangeState(e){
         pId=eId;
     }
     let index=arr.findIndex((obj) => obj.key==pId);
-    let stindex = arr.findIndex((obj) => obj.key==eId);
+    let stindex = arr[index].subtasks.findIndex((obj) => obj.key==eId);
 
     if(arr[index].subtasks[stindex].completed){
         arr[index].subtasks[stindex].completed=false;
