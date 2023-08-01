@@ -110,13 +110,13 @@ function onlyUnique(value, index, array) {
 }
 
 function operation(list1, list2, isUnion) {
-    var result = [];
+    let result = [];
     
-    for (var i = 0; i < list1.length; i++) {
-        var item1 = list1[i],
+    for (let i = 0; i < list1.length; i++) {
+        let item1 = list1[i],
             found = false;
-        for (var j = 0; j < list2.length && !found; j++) {
-            found = item1.userId === list2[j].userId;
+        for (let j = 0; j < list2.length && !found; j++) {
+            found = item1.key === list2[j].key;
         }
         if (found === !!isUnion) { // isUnion is coerced to boolean
             result.push(item1);
@@ -136,11 +136,11 @@ function filter(category, priority, sdueDate, edueDate, tagsarr){
         if(category!=""){
             cond=cond && (el.category==category);
         }
-        
-        if(priority!="All"){
+    
+        if(priority!="all"){
             cond=cond && (el.priority==priority_chart[priority]);
         }
-
+    
         let dd=new Date(el.dueDate).getTime();
         if(sdueDate!=""){
             sdueDate=new Date(sdueDate).getTime();
@@ -154,6 +154,7 @@ function filter(category, priority, sdueDate, edueDate, tagsarr){
         return cond;
     }
     );
+
     if(tagsarr.length){
         let tagfltrArr=[];
         let l=tagsarr.length;
