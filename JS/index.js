@@ -1392,6 +1392,6 @@ setInterval(() => {
     localStorage.setItem("activity_log", JSON.stringify(activity_log));
 }, 2000);
 
-setInterval(()=>{
-    console.log(tagObjs);
-}, 5000)
+// setInterval(()=>{
+//     console.log(tagObjs);
+// }, 5000)
