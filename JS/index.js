@@ -40,7 +40,7 @@ let rev_priority_chart={
 };
 
 class Obj{
-    constructor(key, value, category="None", priority, dueDate, alertDate){
+    constructor(key, value, category="None", priority, dueDate, alertDate=""){
         this.key=key;
         this.value=value;
         this.completed=false;
@@ -258,7 +258,7 @@ function render(obj1){
     if(new Date().getTime() > new Date(obj1.dueDate).getTime()){
         time_text="( Expired )";
     }
-    let inner_txt=`${obj1.value} || Priority - ${rev_priority_chart[obj1.priority.toString()]} || Category - ${obj1.category} || ${time_text} || `;
+    let inner_txt=`${obj1.value} || Priority - ${rev_priority_chart[obj1.priority.toString()]} || Category - ${obj1.category} || ${time_text} || ${obj1.dueDate} || `;
     obj1.tags.forEach((tag)=>{
         inner_txt+=`${tag.value} ,`
     })
@@ -406,6 +406,95 @@ function renderSubtasks(id){
 
 let currTags=[];
 
+function extractTaskAndDate(inputText) {
+    const dueDate = extractDeadlineFromDateText(inputText);
+    let task = inputText.trim();
+    const byIndex = inputText.toLowerCase().indexOf("by");
+
+    if (byIndex !== -1) {
+        task = inputText.slice(0,byIndex).trim();
+    }
+
+    if (dueDate) {
+        // console.log(task);
+        // console.log(dueDate);
+        return { "modifiedTodoText":task, "dueDate":dueDate };
+    }
+    else
+    {
+        return null;
+    }
+}
+
+function extractDeadlineFromDateText(inputText) {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const crntDayKeywords = ["today", "eod", "end of day", "this day"];
+    const tomorrowKeywords = ["tomorrow", "tmrw", "next day", "nextday"];
+    const dateRegex = /(\d{1,2})(st|nd|rd|th)?(\s)?(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)(\s)?(\d{4})?/i;
+    const timeRegex = /(\d{1,2})(:(\d{2}))?(\s)?(am|pm)/i;
+
+    let date = null;
+    let matches;
+
+    if (crntDayKeywords.some((keyword) => inputText.toLowerCase().includes(keyword))) {
+        date = today;
+        //date.setHours(23,59,59);
+        // console.log(date+" date");
+    }
+
+    // Check if input text contains any of the tomorrow keywords
+    if (tomorrowKeywords.some((keyword) => inputText.toLowerCase().includes(keyword))) {
+        date = tomorrow;
+        //date.setHours(23,59,59);
+    }
+
+    // Check if input text contains date information using regex
+    if ((matches = inputText.match(dateRegex))) {
+        const day = parseInt(matches[1], 10);
+        const month = getMonthNumberFromMonthName(matches[4]);
+        const year = matches[13] ? parseInt(matches[13], 10) : today.getFullYear();
+        date = new Date(year, month, day);
+    }
+
+    // Check if input text contains time information using regex
+    if ((matches = inputText.match(timeRegex))) {
+        let hours = parseInt(matches[1], 10);
+        const minutes = matches[3] ? parseInt(matches[3], 10) : 0;
+
+        if (matches[5].toLowerCase() === "pm" && hours < 12) {
+            hours += 12;
+        } else if (matches[5].toLowerCase() === "am" && hours === 12) {
+            hours = 0;
+        }
+
+        if (date) {
+            date.setHours(hours, minutes);
+        } else {
+            date = new Date();
+            date.setHours(hours, minutes);
+        }
+    }
+
+    // if (date) {
+    //     date.setMinutes(date.getMinutes() + 330);
+    // }
+    
+    // console.log(date+" date");
+    // return date ? date.toISOString().slice(0, 16) : "";
+
+    if(date){
+        return date
+    }
+}
+
+function getMonthNumberFromMonthName(monthName) {
+    const monthNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+    return monthNames.indexOf(monthName.toLowerCase().slice(0, 3));
+}
+
 function addEle(){
     let task = document.getElementById("myInput").value;
     let category = document.getElementById("myCategory").value;
@@ -423,10 +512,14 @@ function addEle(){
     ctr+=1;
     addToLog("Task with Id " + ctr.toString() + " added");
 
-    // if(task!="" && dueDate!=""){
-    //     add(ctr, task, category, priority, dueDate);
-    //     renderAll();
-    // }
+    let modD=extractTaskAndDate(task);
+    
+    if(modD){
+        task=modD["modifiedTodoText"];
+        dueDate=modD["dueDate"];
+        dueDate=new Date(dueDate).toISOString().slice(0,10)
+    }
+
     if(task==""){
         alert("Can not add task without any content");
     }
@@ -695,7 +788,8 @@ let edtsbmtbtn=document.getElementById('e-sbmt');
 
 function editEle(e){
     edteId=e.target.classList[2];
-
+    // console.log(e.target);
+    // console.log(e.target.classList)
     edtindex= arr.findIndex((obj) => obj.key==edteId);
 
     currTags=[];
@@ -1204,10 +1298,6 @@ const initSortableList = (e)=>{
     let nextSibling=siblings.find(sibling =>{
         return e.clientY <= sibling.offsetTop + sibling.offsetHeight / 2;
     })
-
-    //console.log(nextSibling);
-    // console.log(draggingItem.classList[1]);
-    // console.log(nextSibling.classList[1]);
 
     ul.insertBefore(draggingItem, nextSibling);
 
